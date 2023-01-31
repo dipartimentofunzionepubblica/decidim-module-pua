@@ -1,1 +1,32 @@
 /* css for decidim_pua */
+
+.button--s {
+  button {
+    margin: 0 auto;
+    width: 50%;
+    min-width: 0;
+  }
+}
+
+.button--m {
+  button {
+    margin: 0 auto;
+    width: 65%;
+    min-width: 0;
+  }
+}
+
+.button--l {
+  button {
+    margin: 0 auto;
+    width: 80%;
+    min-width: 0;
+  }
+}
+
+.button--xl {
+  button {
+    margin: 0 auto;
+    width: 100%;
+  }
+}

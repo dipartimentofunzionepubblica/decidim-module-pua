@@ -11,12 +11,21 @@ module Decidim
 
       routes do
         # Add admin engine routes here
-        # resources :pua do
-        #   collection do
-        #     resources :exports, only: [:create]
-        #   end
-        # end
-        # root to: "pua#index"
+        scope :pua do
+          resources :exports, only: [:index]
+        end
+      end
+
+      initializer "decidim_pua_admin.mount_routes", before: "decidim_admin.mount_routes" do
+        Decidim::Admin::Engine.routes.append do
+          mount Decidim::Pua::AdminEngine => "/"
+        end
+      end
+
+      initializer "decidim_pua.view_helpers" do
+        ActiveSupport.on_load(:action_controller_base) do
+          helper Decidim::Pua::Admin::ApplicationHelper
+        end
       end
 
       def load_seed
