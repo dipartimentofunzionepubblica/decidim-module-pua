@@ -102,14 +102,14 @@ module Decidim
           discovery: true,
           scope: config.scope,
           uid_field: config.uid_field,
-          post_logout_redirect_uri: "#{config.relying_party}/users/auth/pua/logout",
+          post_logout_redirect_uri: "#{config.relying_party}/users/auth/#{name}/logout",
           client_options: {
             port: 443,
             scheme: 'https',
             host: config.issuer,
             identifier: config.app_id,
             secret: config.app_secret,
-            redirect_uri: "#{config.relying_party}/users/auth/pua/callback",
+            redirect_uri: "#{config.relying_party}/users/auth/#{name}/callback",
           }
         }
         if config.flow == :implicit
@@ -120,7 +120,7 @@ module Decidim
         elsif config.flow == :code
           opts.merge!(
             response_type: :code, # solo code or token supportati da omniauth_openid_connect 0.5.0
-            pkce: true,
+            # pkce: true, # Il PUA sembra non funzionare con il pkce
             nonce: proc { SecureRandom.hex(32) }
             )
         else
