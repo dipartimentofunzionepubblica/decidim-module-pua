@@ -120,7 +120,7 @@ module Decidim
         elsif config.flow == :code
           opts.merge!(
             response_type: :code, # solo code or token supportati da omniauth_openid_connect 0.5.0
-            # pkce: true, # Il PUA sembra non funzionare con il pkce
+            pkce: true,
             nonce: proc { SecureRandom.hex(32) }
             )
         else
