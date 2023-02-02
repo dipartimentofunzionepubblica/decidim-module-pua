@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Formez PA
+# Copyright (C) 2023 Formez PA
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3.
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 # You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>
@@ -7,6 +7,7 @@
 
 # User serializaer con personalizzazioni dell'export quali l'utilizzo di
 # della configurazione export_exclude_attributes
+
 module Decidim
   module Pua
     class UserSerializer < Decidim::Exporters::Serializer
@@ -60,8 +61,7 @@ module Decidim
           officialized_at: user.officialized_at,
           officialized_as: user.officialized_as,
           identities: serialize_identities,
-          # spid: spid_serialize_metadata,
-          # cie: cie_serialize_metadata
+          pua: pua_serialize_metadata,
         }
       end
 
@@ -69,34 +69,25 @@ module Decidim
 
       attr_reader :user
 
-      #todo: verificare spid & cie
-      # def spid_serialize_metadata
-      #   serialize_metadata(:spid)
-      # end
-      #
-      # def cie_serialize_metadata
-      #   serialize_metadata(:cie)
-      # end
-      #
-      # def serialize_metadata(current_type)
-      #   tenant_name = user.organization.enabled_omniauth_providers.dig(current_type, :tenant_name)
-      #   tenant = "Decidim::#{current_type.to_s.classify}".constantize.tenants.find { |t| t.name == tenant_name }
-      #   return {} if tenant.blank?
-      #
-      #   auth = Decidim::Authorization.find_by(decidim_user_id: user.id, name: "#{tenant_name}_identity")
-      #   return {} unless auth.present?
-      #
-      #   excluded_attributes = tenant.export_exclude_attributes.map(&:to_sym)
-      #   return {} if excluded_attributes.blank?
-      #
-      #   results = {}
-      #   auth.metadata.keys.each do |k|
-      #     next if tenant.export_exclude_attributes.present? && tenant.export_exclude_attributes.include?(k.to_sym)
-      #     results[k] = auth.metadata[k]
-      #   end
-      #
-      #   results
-      # end
+      def pua_serialize_metadata
+        tenant_name = user.organization.enabled_omniauth_providers.dig(:pua, :tenant_name)
+        tenant = Decidim::Pua.tenants.find { |t| t.name == tenant_name }
+        return {} if tenant.blank?
+
+        auth = Decidim::Authorization.find_by(decidim_user_id: user.id, name: "#{tenant_name}_identity")
+        return {} unless auth.present?
+
+        excluded_attributes = tenant.export_exclude_attributes.map(&:to_sym)
+        return {} if excluded_attributes.blank?
+
+        results = {}
+        auth.metadata.keys.each do |k|
+          next if tenant.export_exclude_attributes.present? && tenant.export_exclude_attributes.include?(k.to_sym)
+          results[k] = auth.metadata[k]
+        end
+
+        results
+      end
 
       def serialize_identities
         return unless user.identities.any?

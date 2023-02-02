@@ -7,3 +7,4 @@ Decidim::Webpacker.register_entrypoints(
   decidim_pua: "#{base_path}/app/packs/entrypoints/decidim_pua.js"
 )
 Decidim::Webpacker.register_stylesheet_import("stylesheets/decidim/pua/pua")
+Decidim::Webpacker.register_stylesheet_import("stylesheets/decidim/pua/admin/application", group: :admin)

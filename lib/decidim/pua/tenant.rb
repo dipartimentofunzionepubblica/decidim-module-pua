@@ -1,3 +1,10 @@
+# Copyright (C) 2023 Formez PA
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+# You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>
+
+# Responsabile di tutte le configurazioni per ogni tenant
+
 require 'decidim/pua/token_verifier'
 
 module Decidim
@@ -20,17 +27,17 @@ module Decidim
         ""
       end
 
-      # Field todo: completare commento
+      # Field
       config_accessor :uid_field, instance_reader: false do
         "sub"
       end
 
-      # todo: completare commento
+      # Definisce l'autorizzazione a determinati dati
       config_accessor :scope, instance_reader: false do
         []
       end
 
-      # Implicit o Code Flow
+      # Implicit o Code Flow (es: :implicit o :code)
       config_accessor :flow, instance_reader: false do
         :code
       end
@@ -50,13 +57,12 @@ module Decidim
         {}
       end
 
-      # I campi da escludere dall'export a causa della polocy GDPR.
-      # Deve contenere un'array di chiavi presenti in metadata_attributes
+      # I campi da escludere dall'export a causa della polocy GDPR. Deve contenere un'array di chiavi presenti in attributes
       config_accessor :export_exclude_attributes do
         []
       end
-      #
-      # # Permette di customizzare il workflow di autorizzazione.
+
+      # Permette di customizzare il workflow di autorizzazione.
       config_accessor :workflow_configurator do
         lambda do |workflow|
           # Di default, la scadenza è impostata a 0 minuti e quindi non scadrà
@@ -65,14 +71,12 @@ module Decidim
         end
       end
 
-      # Permette di customizzare parte del flusso di autenticazione (come
-      # le validazioni) prima che l'utente venga autenticato.
+      # Permette di customizzare parte del flusso di autenticazione (come le validazioni) prima che l'utente venga autenticato.
       config_accessor :authenticator_class do
         Decidim::Pua::Authentication::Authenticator
       end
 
-      # Permette di customizzare parte del i metadata collezionati dagli
-      # attributi SAML.
+      # Permette di customizzare parte degli attributi da salvare.
       config_accessor :metadata_collector_class do
         Decidim::Pua::Verification::MetadataCollector
       end

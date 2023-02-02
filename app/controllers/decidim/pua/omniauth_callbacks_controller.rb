@@ -1,3 +1,10 @@
+# Copyright (C) 2023 Formez PA
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+# You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>
+
+# Gestisce il login PUA
+
 module Decidim
   module Pua
     class OmniauthCallbacksController < ::Decidim::Devise::OmniauthRegistrationsController
@@ -39,7 +46,7 @@ module Decidim
       def create
         form_params = user_params_from_oauth_hash || params.require(:user).permit!
         form_params.merge!(params.require(:user).permit!) if params.dig(:user).present?
-        origin = Base64.strict_decode64(session[:"#{session_prefix}sso_params"]["relay_state"]) rescue ''
+        origin = request.env['omniauth.origin'] rescue ''
 
         invitation_token = invitation_token(origin)
         verified_e = verified_email
@@ -126,23 +133,6 @@ module Decidim
         end
       end
 
-      # def failure
-      #   strategy = failed_strategy
-      #   saml_response = strategy.response_object if strategy
-      #   return super unless saml_response
-      #
-      #   validations = [ :success_status, :session_expiration ]
-      #   validations.each do |key|
-      #     next if saml_response.send("validate_#{key}")
-      #
-      #     flash[:alert] = failure_message || t(".#{key}")
-      #     return redirect_to after_omniauth_failure_path_for(resource_name)
-      #   end
-      #
-      #   set_flash_message! :alert, :failure, kind: "PUA", reason: failure_message
-      #   redirect_to after_omniauth_failure_path_for(resource_name)
-      # end
-
       def sign_in_and_redirect(resource_or_scope, *args)
         if resource_or_scope.is_a?(::Decidim::User)
           return fail_authorize unless authorize_user(resource_or_scope)
@@ -157,13 +147,6 @@ module Decidim
         false
       end
 
-      protected
-
-      # def failure_message
-      #   error = request.respond_to?(:get_header) ? request.get_header("omniauth.error") : request.env["omniauth.error"]
-      #   I18n.t(error) rescue nil
-      # end
-
       private
 
       def authorize_user(user)
@@ -177,12 +160,6 @@ module Decidim
         redirect_to stored_location_for(resource || :user) || decidim.root_path
       end
 
-      # Needs to be specifically defined because the core engine routes are not
-      # all properly loaded for the view and this helper method is needed for
-      # defining the omniauth registration form's submit path.
-      # def omniauth_registrations_path(resource)
-      #   Decidim::Core::Engine.routes.url_helpers.omniauth_registrations_path(resource)
-      # end
       def omniauth_registrations_path(resource)
         decidim_pua.public_send("user_#{current_organization.enabled_omniauth_providers.dig(:pua, :tenant_name)}_omniauth_create_url")
       end
@@ -211,10 +188,6 @@ module Decidim
                   end
       end
 
-      # def session_prefix
-      #   tenant.name + '_pua_'
-      # end
-
       def invitation_token(url)
         begin
           CGI.parse(URI.parse(url).query).dig('invitation_token').first
@@ -222,10 +195,10 @@ module Decidim
           nil
         end
       end
-      #
-      # def verified_email
-      #   authenticator.verified_email
-      # end
+
+      def verified_email
+        authenticator.verified_email
+      end
 
       def oauth_hash
         raw_hash = request.env["omniauth.auth"] || JSON.parse(params.dig(:user, :raw_data))

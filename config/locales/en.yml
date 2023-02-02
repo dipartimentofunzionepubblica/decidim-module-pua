@@ -8,26 +8,20 @@ en:
             email:
               cant_recover_password_due_pua: You must login via PUA with SPID or CIE
   decidim:
+    authorization_handlers:
+      identity:
+        name: Old authorization
     admin:
       filters:
-        spid_presence:
-          label: SPID
+        pua_presence:
+          label: PUA
           values:
             'false': Not enabled
             'true': Enabled
-        cie_presence:
-          label: CIE
+        pua_operation:
+          label: PUA
           values:
-            'false': Not enabled
-            'true': Enabled
-        spid_operation:
-          label: SPID
-          values:
-            'true': Only SPID
-        cie_operation:
-          label: CIE
-          values:
-            'true': Only CIE
+            'true': Only PUA
         action_type:
           label: Action type
           values:
@@ -44,14 +38,10 @@ en:
         login: "%{user_name} logged in with provider %{resource_name} %{space_name}"
         registration: "%{user_name} registered with provider %{resource_name} %{space_name} "
     components:
-      decidim_spid:
-        name: SPID
-      decidim_cie:
-        name: CIE
-      spid:
-        name: SPID
-      cie:
-        name: CIE
+      decidim_pua:
+        name: PUA
+      pua:
+        name: PUA
     pua:
       admin:
         actions:
@@ -60,7 +50,7 @@ en:
         invitations:
           edit:
             header: Complete registration
-            subtitle: Login via SPID or CIE
+            subtitle: Login with SPID or CIE via PUA
       omniauth_callbacks:
         failure:
           success_status: "An error occurred while logging in."
@@ -77,20 +67,7 @@ en:
           sign_up: Please complete your profile
           subtitle: Please fill in the following form in order to complete the sign up
           username_help: Public name that appears on your posts. With the aim of guaranteeing the anonymity, can be any name.
-      slo_request:
-        failure: The logout was not successful
-        success: Logout completed successfully
-      sso_request:
-        failure: The login was not successful
-        success: Login completed successfully
-        failure_19: Authentication failed due to repeated submission of incorrect credentials.
-        failure_20: User with no credentials compatible with the level required by the service provider.
-        failure_21: Timeout during user authentication.
-        failure_22: User denies consent to send data to the SP in case of session in force.
-        failure_23: User with suspended / revoked identity or with blocked credentials.
-        failure_24: The login was not successful
-        failure_25: Authentication process canceled by user.
-      spid:
+      pua:
         info_message: If this is your first time accessing this platform, please ignore this message. Instead, to connect the old user log in first and then log in from the profile.
         disclaimer: "SPID is the access system that allows you to use the online services of the Public Administration and accredited private individuals with a unique digital identity. If you already have a digital identity, log in with your manager's credentials. If you don't have a digital identity yet, request it from one of the managers."
         link: More information on SPID
@@ -117,4 +94,4 @@ en:
   devise:
     failure:
       user:
-        invalid_due_spid: You must login via SPID or CIE
+        invalid_due_pua: You must login with SPID or CIE via PUA

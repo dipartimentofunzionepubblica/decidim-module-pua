@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Formez PA
+# Copyright (C) 2023 Formez PA
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3.
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 # You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>
@@ -6,6 +6,7 @@
 # frozen_string_literal: true
 
 # ridefinizione del create_or_find_user per aggiungere la notifica email
+
 module Decidim
   module Pua
     class CreateOmniauthPuaRegistration < ::Decidim::CreateOmniauthRegistration
@@ -46,8 +47,7 @@ module Decidim
         end
 
         @user.tos_agreement = "1"
-        #todo: or CIE??
-        @user.save! && persisted && !@user.must_log_with_spid? && Decidim::Pua::PuaJob.perform_later(@user)
+        @user.save! && persisted && !@user.must_log_with_pua? && Decidim::Pua::PuaJob.perform_later(@user)
       end
 
     end
