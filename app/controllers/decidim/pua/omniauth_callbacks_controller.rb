@@ -101,7 +101,7 @@ module Decidim
               if existing_identity
                 Decidim::ActionLogger.log(:login, user, existing_identity, {})
               else
-                i = user.identities.find_by(uid: session["#{session_prefix}uid"]) rescue nil
+                i = user.identities.find_by(uid: oauth_hash[:uid]) rescue nil
                 Decidim::ActionLogger.log(:registration, user, i, {})
               end
               sign_in_and_redirect user, verified_email: verified_e, event: :authentication

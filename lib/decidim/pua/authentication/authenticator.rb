@@ -14,7 +14,7 @@ module Decidim
         end
 
         def verified_email
-          @verified_email ||= oauth_data[:info][:email_verified] && oauth_data[:info][:email]
+          @verified_email ||= oauth_data[:info][:email]
         end
 
         def user_params_from_oauth_hash
