@@ -37,11 +37,6 @@ module Decidim
         []
       end
 
-      # Implicit o Code Flow (es: :implicit o :code)
-      config_accessor :flow, instance_reader: false do
-        :code
-      end
-
       # APP ID
       config_accessor :app_id, instance_reader: false do
         ""
@@ -107,6 +102,9 @@ module Decidim
           scope: config.scope,
           uid_field: config.uid_field,
           post_logout_redirect_uri: "#{config.relying_party}/users/auth/#{name}/logout",
+          response_type: :code,
+          pkce: true,
+          nonce: proc { SecureRandom.hex(32) },
           client_options: {
             port: 443,
             scheme: 'https',
@@ -116,21 +114,6 @@ module Decidim
             redirect_uri: "#{config.relying_party}/users/auth/#{name}/callback",
           }
         }
-        if config.flow == :implicit
-          opts.merge!(
-            response_type: :id_token, # solo code or token supportati da omniauth_openid_connect 0.5.0
-            response_mode: 'form_post', # one of: :query, :fragment, :form_post, :web_message (Implicit Flow working only with fragment and form_post, omniauth_openid_connect only with query and form_post)
-          )
-        elsif config.flow == :code
-          opts.merge!(
-            response_type: :code, # solo code or token supportati da omniauth_openid_connect 0.5.0
-            pkce: true,
-            nonce: proc { SecureRandom.hex(32) }
-            )
-        else
-          raise(InvalidFlow, "Il flusso selezionato non è disponibile. Es: :code or :implicit")
-        end
-        opts
       end
 
       def setup!

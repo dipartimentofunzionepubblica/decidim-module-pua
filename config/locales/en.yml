@@ -92,6 +92,9 @@ en:
             post_logout_url: "URL post logout: %{url}"
             button_size: "Button size must to be in [ s, m, l, xl]. Default: m"
   devise:
+    shared:
+      links:
+        sign_in_with_provider_pua: Login
     failure:
       user:
         invalid_due_pua: You must login with SPID or CIE via PUA

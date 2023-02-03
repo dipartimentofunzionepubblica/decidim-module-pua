@@ -91,6 +91,9 @@ it:
             button_size: "Grandezza bottone deve essere in [ s, m, l, xl]. Default: m"
 
   devise:
+    shared:
+      links:
+        sign_in_with_provider_pua: Accedi
     failure:
       user:
         invalid_due_pua: Devi effettuare l'accesso tramite SPID o CIE attraverso PUA

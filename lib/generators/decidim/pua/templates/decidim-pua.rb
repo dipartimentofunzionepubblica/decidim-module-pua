@@ -24,9 +24,6 @@ Decidim::Pua.configure do |config|
   # Definisce lo scope da utilizzare:
   config.scope = [] # Default: [] Es: %i[openid profile email]
 
-  # Definisce il flusso da utilizzare (Code Flow o Implicit Flow):
-  config.flow = :code # Default::flow - Options: :code or :implicit
-
   # Definisce l'app ID
   config.app_id = "client_id"
 
