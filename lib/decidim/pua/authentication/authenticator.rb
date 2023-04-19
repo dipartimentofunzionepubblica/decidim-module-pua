@@ -51,6 +51,14 @@ module Decidim
             provider: oauth_data[:provider],
             uid: user_identifier
           )
+          spid_code = attributes[:providersubject]
+          current_provider = attributes[:providername]
+          if id.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+            id = ::Decidim::Identity.find_by(
+              organization: organization,
+              uid: attributes[:providersubject]
+            )
+          end
           @new_user = id ? id.user.blank? : true
 
           true

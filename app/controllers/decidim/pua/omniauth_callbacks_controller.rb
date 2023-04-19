@@ -83,6 +83,16 @@ module Decidim
           uid: @form.uid
         )
 
+        spid_code = form_params.dig(:raw_data, :extra, :raw_info, :providersubject)
+        current_provider = form_params.dig(:raw_data, :extra, :raw_info, :providername)
+        if existing_identity.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+          existing_identity = Identity.find_by(
+            user: current_organization.users,
+            uid: spid_code
+          )
+        end
+
+
         CreateOmniauthPuaRegistration.call(@form, verified_e) do
           on(:ok) do |user|
             # Se l'identità PUA è già utilizzata da un altro account

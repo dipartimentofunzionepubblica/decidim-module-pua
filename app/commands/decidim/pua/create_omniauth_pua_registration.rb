@@ -50,6 +50,33 @@ module Decidim
         @user.save! && persisted && !@user.must_log_with_pua? && Decidim::Pua::PuaJob.perform_later(@user)
       end
 
+      def existing_identity
+        @existing_identity ||= Identity.find_by(
+          user: organization.users,
+          provider: form.provider,
+          uid: form.uid
+        )
+        return @existing_identity if @existing_identity
+
+        begin
+          data = JSON.parse(form.raw_data)
+          spid_code = data.dig("extra", "raw_info", "providersubject")
+          current_provider = data.dig("extra", "raw_info", "providername")
+          if @existing_identity.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+            @existing_identity = Identity.find_by(
+              user: current_organization.users,
+              uid: spid_code
+            )
+            @user = @existing_identity.user
+            create_identity if @existing_identity # Creo nuova identity relativa al PUA
+          end
+        rescue ::Exception => e
+          Rails.logger.error e.message
+          Rails.logger.error e.backtrace.join("\n")
+          nil
+        end
+      end
+
     end
 
   end
