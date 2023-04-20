@@ -64,10 +64,10 @@ module Decidim
           current_provider = data.dig("extra", "raw_info", "providername")
           if @existing_identity.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
             @existing_identity = Identity.find_by(
-              user: current_organization.users,
+              user: organization.users,
               uid: spid_code
             )
-            @user = @existing_identity.user
+            @user = @existing_identity.try(:user)
             create_identity if @existing_identity # Creo nuova identity relativa al PUA
           end
         rescue ::Exception => e
