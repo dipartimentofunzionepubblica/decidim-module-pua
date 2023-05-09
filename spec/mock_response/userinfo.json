@@ -1,0 +1,11 @@
+{
+  "name": "Alice Smith",
+  "given_name": "Alice",
+  "family_name": "Smith",
+  "email": "alicesmith@email.com",
+  "email_verified": true,
+  "website": "http://alice.com",
+  "providername": "POSTE",
+  "providersubject": "testtest2",
+  "sub": "818727"
+}
