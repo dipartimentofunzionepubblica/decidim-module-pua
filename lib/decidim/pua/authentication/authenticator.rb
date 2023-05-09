@@ -31,7 +31,7 @@ module Decidim
           {
             provider: oauth_data[:provider],
             uid: user_identifier,
-            name: oauth_data[:info][:name],
+            # name: oauth_data[:info][:name],
             # nickname: oauth_data[:info][:nickname] || oauth_data[:info][:name],
             oauth_signature: user_signature,
             avatar_url: oauth_data[:info][:image],
