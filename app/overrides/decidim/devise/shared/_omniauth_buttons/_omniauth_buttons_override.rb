@@ -17,12 +17,6 @@ Deface::Override.new(virtual_path: "decidim/devise/shared/_omniauth_buttons",
           <%= t("devise.shared.links.sign_in_with_provider_pua") %>
         </span>
       <% end %>
-      <% unless current_organization.enabled_omniauth_providers.keys.excluding(:pua).any? %>
-         <span class="register__separator">
-           <span class="register__separator__text"><%= t("decidim.devise.shared.omniauth_buttons.or") %></span>
-         </span>
-      <% end %>
-
       <% next %>
     <% end %>
 '
