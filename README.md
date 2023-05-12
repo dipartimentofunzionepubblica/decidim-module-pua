@@ -14,6 +14,7 @@ ed esegui dal terminale
 ```bash
 $ bundle install
 $ bundle exec rails generate decidim:pua:install TENANT_NAME ISSUER RELYING_PARTY
+$ bundle exec rake assets:precompile
 # Ripetere l'installer per ogni tenant di cui si ha bisogno.
 ```
 Sostituire TENANT_NAME con una stringa univoca che identifica il tenant, ISSUER con un endpoint (https://www.example.org) del provider OpenID Connect PUA e RELYING_PARTY (https://www.mytenantdomain.org).

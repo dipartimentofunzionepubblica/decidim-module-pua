@@ -17,6 +17,7 @@ module Decidim
       def pua
         session["decidim-pua.signed_in"] = true
         session["decidim-pua.tenant"] = tenant.name
+        cookies.signed_or_encrypted["_pua_id_token"] = oauth_hash.dig(:credentials, :id_token)
 
         authenticator.validate!
 
