@@ -114,13 +114,20 @@ module Decidim
 
         def update_user!(user)
           user_changed = false
-          if user.email != verified_email
+          if verified_email.present? && (user.email != verified_email)
             user_changed = true
             user.email = verified_email
             user.skip_reconfirmation!
           end
-
-          user.save! if user_changed
+          # user.newsletter_notifications_at = Time.zone.now if user_newsletter_subscription?(user)
+          if user.valid?
+            user.save! if user_changed
+          else
+            if (user.errors.details.all?{ |k,v| k == :email && v.flatten.map{ |k| k[:error] }.all?(:taken) } rescue false)
+              Rails.logger.info("decidim-module-pua || L'utente #{user.id} ha un'altro account decidim con la stessa email dello PUA richiesto. Non aggiorno l'email.")
+              user.reload
+            end
+          end
         end
 
         protected
