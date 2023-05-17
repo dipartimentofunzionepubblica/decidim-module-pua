@@ -74,10 +74,14 @@ en:
         request: Don't have SPID?
         help: Need help?
       pua_mailer:
-        subject: account association successful
         send_notification:
+          subject: Account association successful
           dear_user: "Dear user,"
-          content: "your Decidim account has been successfully associated with your SPID or CIE account. From now on your credentials have been deactivated and I may continue to log in with your SPID or CIE account."
+          content: "your email and password account has been successfully associated with your SPID or CIE or CNS account. From now on your credentials have been deactivated and I may continue to log in with your SPID or CIE or CNS account."
+        send_update_email_notification:
+          subject: Account email updated
+          dear_user: "Dear user,"
+          content: "your email has been successfully updated with email incoming from SPID or CIE or CNS account."
       verification:
         authorizations:
           create:

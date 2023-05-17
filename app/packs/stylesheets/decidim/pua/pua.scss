@@ -4,11 +4,16 @@
 // You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>
 
 @mixin button-pua {
+  &:only-child {
+    margin-bottom: 100px;
+  }
   .button--pua {
     background-color: #06c;
     border-color: #06c;
     font-weight: 600;
     cursor: pointer;
+    padding: 12px;
+    text-align: center;
 
     .button--social__text {
       margin-left: 0;

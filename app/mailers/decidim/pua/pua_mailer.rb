@@ -22,8 +22,18 @@ module Decidim
 
           subject = I18n.t(
             "subject",
-            scope: "decidim.pua.pua_mailer"
+            scope: "decidim.pua.pua_mailer.send_notification"
           )
+          mail(to: user.email, subject: subject)
+        end
+      end
+
+      def send_update_email_notification(user)
+        with_user(user) do
+          @user = user
+          @organization = @user.organization
+
+          subject = I18n.t("subject", scope: "decidim.pua.pua_mailer.send_update_email_notification")
           mail(to: user.email, subject: subject)
         end
       end

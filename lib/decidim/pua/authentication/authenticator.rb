@@ -51,9 +51,7 @@ module Decidim
             provider: oauth_data[:provider],
             uid: user_identifier
           )
-          spid_code = attributes[:providersubject]
-          current_provider = attributes[:providername]
-          if id.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+          if id.nil? && is_spid?
             id = ::Decidim::Identity.find_by(
               organization: organization,
               uid: attributes[:providersubject]
@@ -114,14 +112,26 @@ module Decidim
 
         def update_user!(user)
           user_changed = false
+          generated_password = SecureRandom.hex
+          user.password = generated_password
+          user.password_confirmation = generated_password
+
           if verified_email.present? && (user.email != verified_email)
             user_changed = true
             user.email = verified_email
-            user.skip_reconfirmation!
+            if is_spid?
+              user.skip_reconfirmation!
+            else
+              user.confirmed_at = nil
+            end
           end
           # user.newsletter_notifications_at = Time.zone.now if user_newsletter_subscription?(user)
           if user.valid?
-            user.save! if user_changed
+            if user_changed
+              if user.save! && is_spid?
+                Decidim::Pua::UpdateEmailPuaJob.perform_later(user)
+              end
+            end
           else
             if (user.errors.details.all?{ |k,v| k == :email && v.flatten.map{ |k| k[:error] }.all?(:taken) } rescue false)
               Rails.logger.info("decidim-module-pua || L'utente #{user.id} ha un'altro account decidim con la stessa email dello PUA richiesto. Non aggiorno l'email.")
@@ -167,6 +177,12 @@ module Decidim
           @person_identifier_digest ||= Digest::MD5.hexdigest(
             "#{tenant.name.upcase}:#{user_identifier}:#{Rails.application.secrets.secret_key_base}"
           )
+        end
+
+        def is_spid?
+          spid_code = attributes[:providersubject]
+          current_provider = attributes[:providername]
+          spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
         end
       end
     end

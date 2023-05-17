@@ -30,6 +30,7 @@ module Decidim
           # Aggiorna le informazioni dell'utente
           authenticator.update_user!(current_user)
 
+          sign_in(current_user, bypass: true)
           Decidim::Pua::PuaJob.perform_later(current_user)
           flash[:notice] = t("authorizations.create.success", scope: "decidim.pua.verification")
           return redirect_to(stored_location_for(resource || :user) || decidim.root_path)
@@ -49,8 +50,12 @@ module Decidim
         form_params.merge!(params.require(:user).permit!) if params.dig(:user).present?
         origin = request.env['omniauth.origin'] rescue ''
 
-        invitation_token = invitation_token(origin)
-        verified_e = verified_email
+        spid_code = form_params.dig(:raw_data, :extra, :raw_info, :providersubject)
+        current_provider = form_params.dig(:raw_data, :extra, :raw_info, :providername)
+
+        invitation_token = invitation_token(origin) || form_params.dig("invitation_token")
+        verified_e = current_provider && !["CIE", "CNS"].include?(current_provider) ? verified_email : nil
+
 
         # nel caso la form di integrazione dati viene presentata
         invited_user = nil
@@ -63,11 +68,16 @@ module Decidim
           @form.email ||= invited_user.email
           verified_e = invited_user.email
         else
-          form_params[:name] = params.dig(:user, :name) if params.dig(:user, :name).present?
-          form_params[:nickname] = params.dig(:user, :nickname) if params.dig(:user, :nickname).present?
+          if current_provider && !["CIE", "CNS"].include?(current_provider) && ( u = current_organization.users.find_by(email: verified_e) )
+            form_params[:name] = u.name
+            form_params[:nickname] = u.nickname
+          else
+            form_params[:name] = params.dig(:user, :name) if params.dig(:user, :name).present? && current_provider && !["CIE", "CNS"].include?(current_provider)
+            form_params[:nickname] = params.dig(:user, :nickname) if params.dig(:user, :nickname).present? && current_provider && !["CIE", "CNS"].include?(current_provider)
+          end
           @form = form(OmniauthPuaRegistrationForm).from_params(form_params)
           @form.email ||= verified_e
-          verified_e ||= form_params.dig(:email)
+          verified_e ||= current_provider && !["CIE", "CNS"].include?(current_provider) && form_params.dig(:email)
         end
 
         # Controllo che non esisti un'altro account con la stessa email utilizzata con PUA
@@ -84,8 +94,6 @@ module Decidim
           uid: @form.uid
         )
 
-        spid_code = form_params.dig(:raw_data, :extra, :raw_info, :providersubject)
-        current_provider = form_params.dig(:raw_data, :extra, :raw_info, :providername)
         if existing_identity.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
           existing_identity = Identity.find_by(
             user: current_organization.users,
@@ -133,7 +141,7 @@ module Decidim
           end
 
           on(:invalid) do |user|
-            set_flash_message :alert, :failure, kind: "PUA", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
+            #set_flash_message :alert, :failure, kind: "PUA", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
             render :new
           end
 
@@ -142,6 +150,8 @@ module Decidim
             render :new
           end
         end
+      rescue Decidim::Pua::Authentication::AuthorizationBoundToOtherUserError
+        return fail_authorize(:identity_bound_to_other_user)
       end
 
       def sign_in_and_redirect(resource_or_scope, *args)
@@ -162,8 +172,6 @@ module Decidim
 
       def authorize_user(user)
         authenticator.authorize_user!(user)
-      rescue Decidim::Pua::Authentication::AuthorizationBoundToOtherUserError
-        nil
       end
 
       def fail_authorize(failure_message_key = :already_authorized)

@@ -13,7 +13,7 @@ module Decidim
       private
 
       def present_resource_name
-        resource && resource.provider
+        resource && resource.provider && "PUA"
       end
 
     end

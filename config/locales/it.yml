@@ -72,10 +72,15 @@ it:
         request: Non hai SPID?
         help: Serve aiuto?
       pua_mailer:
-        subject: associazione account avvenuta con successo
         send_notification:
+          subject: Associazione account avvenuta con successo
           dear_user: "Gentile utente,"
-          content: "il tuo account Decidim è stato associato correttamente al tuo account SPID o CIE. D'ora in avanti le tue credenziali sono state disattivate e potrei continuare ad accedere con il tuo account SPID o CIE."
+          content: "il tuo account con email e password è stato associato correttamente al tuo account SPID o CIE o CNS. D'ora in avanti le tue credenziali sono state disattivate e potrei continuare ad accedere con il tuo account SPID o CIE o CNS."
+        send_update_email_notification:
+          subject: Aggiornamento email account avvenuta con successo
+          dear_user: "Gentile utente,"
+          content: "la tua email è stata correttamente aggiornata con l'email del tuo account SPID o CIE o CNS."
+
       verification:
         authorizations:
           create:

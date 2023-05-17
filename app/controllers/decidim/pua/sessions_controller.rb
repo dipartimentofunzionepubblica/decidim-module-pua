@@ -17,6 +17,9 @@ module Decidim
         tenant = Decidim::Pua.tenants.find { |t| t.name == tenant_name }
         raise "Unkown PUA tenant: #{tenant_name}" unless tenant
 
+        i = current_user.identities.find_by(provider: tenant_name) rescue nil
+        Decidim::ActionLogger.log(:logout, current_user, i, {}) if i
+
         sign_out_path = send("user_#{tenant.name}_omniauth_oidc_logout_path")
 
         redirect_to sign_out_path

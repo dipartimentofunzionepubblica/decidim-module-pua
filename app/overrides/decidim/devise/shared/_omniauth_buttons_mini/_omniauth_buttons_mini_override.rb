@@ -13,9 +13,7 @@ Deface::Override.new(virtual_path: "decidim/devise/shared/_omniauth_buttons_mini
       <% size = current_organization.enabled_omniauth_providers.dig(:pua, :button_size).presence || "m" %>
       <%= button_to decidim_pua.send("user_#{current_organization.enabled_omniauth_providers.dig(:pua, :tenant_name)}_omniauth_authorize_path"),
           class: "button button--social button--#{normalize_provider_name(provider)}", form_class: "button--#{size}" do %>
-        <span class="button--social__text">
           <%= t("devise.shared.links.sign_in_with_provider_pua") %>
-        </span>
       <% end %>
 
       <% next %>

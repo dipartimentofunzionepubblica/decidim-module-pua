@@ -38,6 +38,11 @@ module Decidim
         Decidim::Pua.setup!
       end
 
+      initializer "decidim_pua.confirmable" do
+        Decidim.unconfirmed_access_for = 0.days
+        Devise.allow_unconfirmed_access_for = Decidim.unconfirmed_access_for
+      end
+
       overrides = "#{Decidim::Pua::Engine.root}/app/overrides"
       config.to_prepare do
         Rails.autoloaders.main.ignore(overrides)
