@@ -3,6 +3,6 @@ en:
     authorization_handlers:
       <%= tenant_name %>_identity:
         name: "PUA"
-        explanation: "Connect your account by logging in with SPID or CIE via PUA"
+        explanation: "Connect your account by logging in with SPID, CIE or CNS via PUA"
         title: Migrate account
-        description: Your Decidim account will be associated with your SPID or CIE account. Your credentials will be deactivated and you can continue to log in with your SPID or CIE account.
+        description: Your account with email and password will be associated with your SPID, CIE or CNS account. Your credentials will be deactivated and you can continue to log in with your SPID, CIE o CNS account.

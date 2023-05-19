@@ -47,7 +47,6 @@ module Decidim
 
       def create
         form_params = user_params_from_oauth_hash || params.require(:user).permit!
-        Rails.logger.info form_params.inspect
         form_params.merge!(params.require(:user).permit!) if params.dig(:user).present?
         origin = request.env['omniauth.origin'] rescue ''
 
@@ -76,7 +75,6 @@ module Decidim
             form_params[:name] = params.dig(:user, :name) if params.dig(:user, :name).present? && current_provider && !["cie", "cns"].include?(current_provider)
             form_params[:nickname] = params.dig(:user, :nickname) if params.dig(:user, :nickname).present? && current_provider && !["cie", "cns"].include?(current_provider)
           end
-          Rails.logger.info form_params.inspect
           @form = form(OmniauthPuaRegistrationForm).from_params(form_params)
           @form.email ||= verified_e
           verified_e ||= current_provider && !["cie", "cns"].include?(current_provider) && form_params.dig(:email)
@@ -136,7 +134,7 @@ module Decidim
               set_flash_message :notice, :success, kind: "PUA"
             else
               expire_data_after_sign_in!
-              user.resend_confirmation_instructions unless user.confirmed?
+              #user.resend_confirmation_instructions unless user.confirmed?
               redirect_to decidim.root_path
               flash[:notice] = t("devise.registrations.signed_up_but_unconfirmed")
             end

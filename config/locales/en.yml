@@ -6,7 +6,7 @@ en:
         decidim/user:
           attributes:
             email:
-              cant_recover_password_due_pua: You must login via PUA with SPID or CIE
+              cant_recover_password_due_pua: You must login via PUA with SPID, CIE o CNS
   decidim:
     authorization_handlers:
       identity:
@@ -50,7 +50,7 @@ en:
         invitations:
           edit:
             header: Complete registration
-            subtitle: Login with SPID or CIE via PUA
+            subtitle: Login with SPID, CIE or CNS via PUA
       omniauth_callbacks:
         failure:
           success_status: "An error occurred while logging in."
@@ -77,11 +77,11 @@ en:
         send_notification:
           subject: Account association successful
           dear_user: "Dear user,"
-          content: "your email and password account has been successfully associated with your SPID or CIE or CNS account. From now on your credentials have been deactivated and I may continue to log in with your SPID or CIE or CNS account."
+          content: "your email and password account has been successfully associated with your SPID, CIE or CNS account. From now on your credentials have been deactivated and I may continue to log in with your SPID, CIE or CNS account."
         send_update_email_notification:
           subject: Account email updated
           dear_user: "Dear user,"
-          content: "your email has been successfully updated with email incoming from SPID or CIE or CNS account."
+          content: "your email has been successfully updated with email incoming from SPID, CIE or CNS account."
       verification:
         authorizations:
           create:
@@ -101,4 +101,4 @@ en:
         sign_in_with_provider_pua: Login
     failure:
       user:
-        invalid_due_pua: You must login with SPID or CIE via PUA
+        invalid_due_pua: You must login with SPID, CIE or CNS via PUA

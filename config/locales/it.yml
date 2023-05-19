@@ -6,7 +6,7 @@ it:
         decidim/user:
           attributes:
             email:
-              cant_recover_password_due_pua: Devi effettuare l'accesso tramite SPID o CIE
+              cant_recover_password_due_pua: Devi effettuare l'accesso tramite SPID, CIE o CNS
   decidim:
     authorization_handlers:
       identity:
@@ -48,7 +48,7 @@ it:
         invitations:
           edit:
             header: Completa la registrazione
-            subtitle: Effettua il login con SPID o CIE tramite PUA
+            subtitle: Effettua il login con SPID, CIE o CNS tramite PUA
       omniauth_callbacks:
         failure:
           success_status: "Si è verificato un errore durante il login."
@@ -75,11 +75,11 @@ it:
         send_notification:
           subject: Associazione account avvenuta con successo
           dear_user: "Gentile utente,"
-          content: "il tuo account con email e password è stato associato correttamente al tuo account SPID o CIE o CNS. D'ora in avanti le tue credenziali sono state disattivate e potrei continuare ad accedere con il tuo account SPID o CIE o CNS."
+          content: "il tuo account con email e password è stato associato correttamente al tuo account SPID, CIE o CNS. D'ora in avanti le tue credenziali sono state disattivate e potrei continuare ad accedere con il tuo account SPID, CIE o CNS."
         send_update_email_notification:
           subject: Aggiornamento email account avvenuta con successo
           dear_user: "Gentile utente,"
-          content: "la tua email è stata correttamente aggiornata con l'email del tuo account SPID o CIE o CNS."
+          content: "la tua email è stata correttamente aggiornata con l'email del tuo account SPID, CIE o CNS."
 
       verification:
         authorizations:
@@ -101,4 +101,4 @@ it:
         sign_in_with_provider_pua: Accedi
     failure:
       user:
-        invalid_due_pua: Devi effettuare l'accesso tramite SPID o CIE attraverso PUA
+        invalid_due_pua: Devi effettuare l'accesso tramite SPID, CIE o CNS attraverso PUA
