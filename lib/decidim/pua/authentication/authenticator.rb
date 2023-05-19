@@ -182,7 +182,7 @@ module Decidim
         def is_spid?
           spid_code = attributes[:providersubject]
           current_provider = attributes[:providername]
-          spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+          spid_code && current_provider && !["cie", "cns"].include?(current_provider)
         end
       end
     end

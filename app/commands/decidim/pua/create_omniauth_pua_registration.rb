@@ -62,7 +62,7 @@ module Decidim
           data = JSON.parse(form.raw_data)
           spid_code = data.dig("extra", "raw_info", "providersubject")
           current_provider = data.dig("extra", "raw_info", "providername")
-          if @existing_identity.nil? && spid_code && current_provider && !["CIE", "CNS"].include?(current_provider)
+          if @existing_identity.nil? && spid_code && current_provider && !["cie", "cns"].include?(current_provider)
             @existing_identity = Identity.find_by(
               user: organization.users,
               uid: spid_code
