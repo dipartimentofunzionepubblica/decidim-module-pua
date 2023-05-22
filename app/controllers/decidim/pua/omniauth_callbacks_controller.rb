@@ -54,7 +54,7 @@ module Decidim
         current_provider = form_params.dig(:raw_data, :extra, :raw_info, :providername)
 
         invitation_token = invitation_token(origin) || form_params.dig("invitation_token")
-        verified_e = current_provider && !["cie", "cns"].include?(current_provider) ? verified_email : nil
+        verified_e = isnt_cie_or_cns?(current_provider) ? verified_email : nil
 
 
         # nel caso la form di integrazione dati viene presentata
@@ -68,16 +68,16 @@ module Decidim
           @form.email ||= invited_user.email
           verified_e = invited_user.email
         else
-          if current_provider && !["cie", "cns"].include?(current_provider) && ( u = current_organization.users.find_by(email: verified_e) )
+          if current_provider && isnt_cie_or_cns?(current_provider) && (u = current_organization.users.find_by(email: verified_e))
             form_params[:name] = u.name
             form_params[:nickname] = u.nickname
           else
-            form_params[:name] = params.dig(:user, :name) if params.dig(:user, :name).present? && current_provider && !["cie", "cns"].include?(current_provider)
-            form_params[:nickname] = params.dig(:user, :nickname) if params.dig(:user, :nickname).present? && current_provider && !["cie", "cns"].include?(current_provider)
+            form_params[:name] = params.dig(:user, :name) if params.dig(:user, :name).present? && isnt_cie_or_cns?(current_provider)
+            form_params[:nickname] = params.dig(:user, :nickname) if params.dig(:user, :nickname).present? && isnt_cie_or_cns?(current_provider)
           end
           @form = form(OmniauthPuaRegistrationForm).from_params(form_params)
           @form.email ||= verified_e
-          verified_e ||= current_provider && !["cie", "cns"].include?(current_provider) && form_params.dig(:email)
+          verified_e ||= isnt_cie_or_cns?(current_provider) && form_params.dig(:email)
         end
 
         # Controllo che non esisti un'altro account con la stessa email utilizzata con PUA
@@ -94,7 +94,7 @@ module Decidim
           uid: @form.uid
         )
 
-        if existing_identity.nil? && spid_code && current_provider && !["cie", "cns"].include?(current_provider)
+        if existing_identity.nil? && spid_code && isnt_cie_or_cns?(current_provider)
           existing_identity = Identity.find_by(
             user: current_organization.users,
             uid: spid_code
@@ -224,6 +224,10 @@ module Decidim
         return {} unless raw_hash
 
         raw_hash.deep_symbolize_keys
+      end
+
+      def isnt_cie_or_cns?(current_provider)
+        current_provider && !["cie", "cns"].include?(current_provider.try(&:downcase))
       end
     end
   end

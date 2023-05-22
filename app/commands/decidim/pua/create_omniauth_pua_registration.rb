@@ -62,13 +62,16 @@ module Decidim
           data = JSON.parse(form.raw_data)
           spid_code = data.dig("extra", "raw_info", "providersubject")
           current_provider = data.dig("extra", "raw_info", "providername")
-          if @existing_identity.nil? && spid_code && current_provider && !["cie", "cns"].include?(current_provider)
+          if @existing_identity.nil? && spid_code && current_provider && !["cie", "cns"].include?(current_provider.try(&:downcase))
             @existing_identity = Identity.find_by(
               user: organization.users,
               uid: spid_code
             )
             @user = @existing_identity.try(:user)
-            create_identity if @existing_identity # Creo nuova identity relativa al PUA
+            if @existing_identity # Creo nuova identity relativa al PUA
+              create_identity
+              Decidim::Pua::PuaJob.perform_later(@user)
+            end
           end
         rescue ::Exception => e
           Rails.logger.error e.message
