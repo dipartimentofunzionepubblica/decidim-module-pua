@@ -28,11 +28,20 @@ module Decidim
           return fail_authorize unless authorize_user(current_user)
 
           # Aggiorna le informazioni dell'utente
-          authenticator.update_user!(current_user)
+          authenticator.update_user!(current_user, true)
 
-          sign_in(current_user, bypass: true)
+          # to force remain logged in
+          u = current_user
+          sign_out(current_user)
+          current_provider = oauth_hash.dig(:extra, :raw_info, :providername)
+          sign_in(u) if u.reload.confirmed?
+          if !isnt_cie_or_cns?(current_provider) && !u.confirmed?
+            flash[:notice] = t("devise.registrations.signed_up_but_unconfirmed")
+          else
+            flash[:notice] = t("authorizations.create.success", scope: "decidim.pua.verification")
+          end
           Decidim::Pua::PuaJob.perform_later(current_user)
-          flash[:notice] = t("authorizations.create.success", scope: "decidim.pua.verification")
+
           return redirect_to(stored_location_for(resource || :user) || decidim.root_path)
         end
 
@@ -54,7 +63,7 @@ module Decidim
         current_provider = form_params.dig(:raw_data, :extra, :raw_info, :providername)
 
         invitation_token = invitation_token(origin) || form_params.dig("invitation_token")
-        verified_e = isnt_cie_or_cns?(current_provider) ? verified_email : nil
+        verified_e = verified_email
 
 
         # nel caso la form di integrazione dati viene presentata
@@ -77,7 +86,7 @@ module Decidim
           end
           @form = form(OmniauthPuaRegistrationForm).from_params(form_params)
           @form.email ||= verified_e
-          verified_e ||= isnt_cie_or_cns?(current_provider) && form_params.dig(:email)
+          verified_e ||= form_params.dig(:email)
         end
 
         # Controllo che non esisti un'altro account con la stessa email utilizzata con PUA
@@ -101,8 +110,8 @@ module Decidim
           )
         end
 
-
-        CreateOmniauthPuaRegistration.call(@form, verified_e) do
+        CreateOmniauthPuaRegistration.call(@form, (isnt_cie_or_cns?(current_provider) || invited_user.present?) && verified_e) do
+        # CreateOmniauthPuaRegistration.call(@form, verified_e) do
           on(:ok) do |user|
             # Se l'identità PUA è già utilizzata da un altro account
             if invited_user.present? && invited_user.email != user.email
@@ -146,7 +155,9 @@ module Decidim
           end
 
           on(:error) do |user|
-            set_flash_message :alert, :failure, kind: "PUA", reason: user.errors.full_messages.try(:first)
+            r = user.errors.details.dig(:email).any?{ |a| a.dig(:error) == :taken } rescue nil
+            message = r ? t("failure.already_exists", scope: "decidim.pua.omniauth_callbacks") : user.errors.full_messages.try(:first)
+            set_flash_message :alert, :failure, kind: "PUA", reason: message
             render :new
           end
         end

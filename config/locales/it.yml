@@ -55,6 +55,7 @@ it:
           already_authorized: "Utente già loggato"
           identity_bound_to_other_user: "Si è verificato un errore durante il login."
           session_expiration: "Sessione scaduta"
+          already_exists: "Email è già presente. Fai il login con le tue credenziali ed accedi a SPID, CIE o PUA dalle impostazioni del tuo account."
           conditions: ""
         create:
           email_already_exists: Un altro account utilizza lo stesso indirizzo email

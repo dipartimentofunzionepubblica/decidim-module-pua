@@ -110,25 +110,28 @@ module Decidim
           authorization
         end
 
-        def update_user!(user)
+        def update_user!(user, force= false)
           user_changed = false
           generated_password = SecureRandom.hex
           user.password = generated_password
           user.password_confirmation = generated_password
+          user.save
 
-          if verified_email.present? && (user.email != verified_email)
+          if (verified_email.present? && (user.email != verified_email)) || force
             user_changed = true
-            user.email = verified_email
             if is_spid?
               user.skip_reconfirmation!
             else
-              user.confirmed_at = nil
+              user.confirmed_at = nil if user.email != verified_email
+              # user.resend_confirmation_instructions unless user.confirmed?
             end
+            user.email = verified_email
           end
           # user.newsletter_notifications_at = Time.zone.now if user_newsletter_subscription?(user)
+          notification_email = user.email_changed?
           if user.valid?
             if user_changed
-              if user.save! && is_spid?
+              if user.save! && is_spid? && notification_email
                 Decidim::Pua::UpdateEmailPuaJob.perform_later(user)
               end
             end

@@ -57,6 +57,7 @@ en:
           already_authorized: "User already logged in"
           identity_bound_to_other_user: "An error occurred while logging in."
           session_expiration: "Session expired"
+          already_exists: "Email is already present. Log in with your credentials and access SPID, CIE or PUA from your account settings."
           conditions: ""
         create:
           email_already_exists: Another account is using the same email address
