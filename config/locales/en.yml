@@ -57,7 +57,7 @@ en:
           already_authorized: "User already logged in"
           identity_bound_to_other_user: "An error occurred while logging in."
           session_expiration: "Session expired"
-          already_exists: "Email is already present. Log in with your credentials and access SPID, CIE or PUA from your account settings."
+          already_exists: "Email is already present. Log in with your credentials and access SPID, CIE or CNS from your account settings."
           conditions: ""
         create:
           email_already_exists: Another account is using the same email address
@@ -86,11 +86,11 @@ en:
       verification:
         authorizations:
           create:
-            success: You have been successfully authorized through PUA
+            success: You have been successfully authorized through SPID, CIE or CNS
     system:
       organizations:
         omniauth_settings:
-          validation_alert: "The \"name\" must also be different between the SPID and CIE configurations."
+          validation_alert: "The \"name\" must also be different between the SPID, CIE or CNS configurations."
           pua:
             tenant_name: "Enter the \"name\" used to identify tenant configurations."
             login_url: "URL redirect after login: %{url}"

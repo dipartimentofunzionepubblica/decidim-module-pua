@@ -115,7 +115,7 @@ module Decidim
           on(:ok) do |user|
             # Se l'identità PUA è già utilizzata da un altro account
             if invited_user.present? && invited_user.email != user.email
-              set_flash_message :alert, :failure, kind: "PUA", reason: t("decidim.devise.omniauth_registrations.create.email_already_exists")
+              set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: t("decidim.devise.omniauth_registrations.create.email_already_exists")
               return redirect_to after_omniauth_failure_path_for(resource_name)
             end
 
@@ -140,7 +140,7 @@ module Decidim
                 Decidim::ActionLogger.log(:registration, user, i, {})
               end
               sign_in_and_redirect user, verified_email: verified_e, event: :authentication
-              set_flash_message :notice, :success, kind: "PUA"
+              set_flash_message :notice, :success, kind: "SPID, CIE o CNS"
             else
               expire_data_after_sign_in!
               #user.resend_confirmation_instructions unless user.confirmed?
@@ -150,14 +150,14 @@ module Decidim
           end
 
           on(:invalid) do |user|
-            #set_flash_message :alert, :failure, kind: "PUA", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
+            #set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
             render :new
           end
 
           on(:error) do |user|
             r = user.errors.details.dig(:email).any?{ |a| a.dig(:error) == :taken } rescue nil
             message = r ? t("failure.already_exists", scope: "decidim.pua.omniauth_callbacks") : user.errors.full_messages.try(:first)
-            set_flash_message :alert, :failure, kind: "PUA", reason: message
+            set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: message
             render :new
           end
         end
