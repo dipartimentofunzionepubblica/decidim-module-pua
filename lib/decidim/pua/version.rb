@@ -9,7 +9,7 @@ module Decidim
   # This holds the decidim-meetings version.
   module Pua
     def self.version
-      "0.26.9"
+      "0.26.10"
     end
   end
 end
