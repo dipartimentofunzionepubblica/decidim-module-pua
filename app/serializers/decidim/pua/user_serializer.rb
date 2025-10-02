@@ -31,7 +31,8 @@ module Decidim
             name: user.organization.try(:name)
           },
           newsletter_notifications_at: user.newsletter_notifications_at,
-          email_on_notification: user.email_on_notification,
+          # Rimosso a seguito rimozione attributo in 0.27
+          #email_on_notification: user.email_on_notification,
           admin: user.admin,
           personal_url: user.personal_url,
           about: user.about,
