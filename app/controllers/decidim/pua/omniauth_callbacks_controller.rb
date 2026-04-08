@@ -150,7 +150,7 @@ module Decidim
           end
 
           on(:invalid) do |user|
-            #set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
+            set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
             render :new
           end
 
@@ -240,6 +240,7 @@ module Decidim
       def isnt_cie_or_cns?(current_provider)
         current_provider && !["cie", "cns"].include?(current_provider.try(&:downcase))
       end
+
     end
   end
 end
