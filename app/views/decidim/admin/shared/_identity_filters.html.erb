@@ -46,7 +46,7 @@
     <% end %>
   </div>
   <div class="cell auto text-right">
-    <%= admin_filters_pagination %>
+    <%= admin_filter_selector %>
   </div>
 </div>
 <script>
@@ -61,8 +61,6 @@
                 var new_url = url.toString();
                 $('.filter-status').append($(this).data("content"))
                 location = new_url;
-                // location.reload();
-
             })
         });
     });

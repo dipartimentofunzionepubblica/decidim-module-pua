@@ -7,7 +7,8 @@
 
 Deface::Override.new(virtual_path: "decidim/admin/officializations/index",
                      name: "add-badge-pua",
-                     insert_before: 'div.card-section tbody tr td erb[loud]:contains("translated_attribute(user.officialized_as)")') do
+					 original: 'e0a80d937afa7675491ef8dfcfdb7ff9adc16e16',
+                     insert_before: 'div.card tbody tr td erb[loud]:contains("translated_attribute(user.officialized_as)")') do
 '
   <%= user.must_log_with_pua? ? pua_icon : "" %>
 '
