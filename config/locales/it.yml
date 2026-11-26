@@ -41,6 +41,10 @@ it:
       pua:
         name: PUA
     pua:
+      account:
+        email_conflict:
+          title: Indirizzo email non aggiornato
+          body: "L'indirizzo email del tuo profilo PUA (%{pua_email}) risulta già associato a un altro account della piattaforma, pertanto su questo account resta in uso l'indirizzo %{email}. Per unificare gli account contatta l'assistenza."
       admin:
         actions:
           export: Esporta utenti privati
@@ -57,9 +61,23 @@ it:
           session_expiration: "Sessione scaduta"
           already_exists: "Email è già presente. Fai il login con le tue credenziali ed accedi a SPID, CIE o CNS dalle impostazioni del tuo account."
           conditions: ""
+          email_conflict: "L'indirizzo email del tuo profilo PUA risulta già associato a un altro account della piattaforma, pertanto l'email del tuo profilo non è stata aggiornata. Per unificare gli account contatta l'assistenza."
         create:
           email_already_exists: Un altro account utilizza lo stesso indirizzo email
           email_different: L'indirizzo email inserito è diverso da quello dell'invito
+        errors:
+          blank: "Questo campo è obbligatorio."
+          invalid: "Il valore inserito non è valido."
+          too_long: "Il valore inserito supera la lunghezza massima consentita di %{count} caratteri."
+          name:
+            blank: "Il nome utente è obbligatorio."
+          nickname:
+            blank: "Il nickname è obbligatorio."
+            invalid: "Il nickname può contenere soltanto lettere, numeri, trattini (-) e trattini bassi (_), senza spazi."
+            taken: "Questo nickname è già utilizzato da un altro utente. Ti invitiamo a sceglierne uno diverso."
+            too_long: "Il nickname può contenere al massimo %{count} caratteri."
+          email:
+            taken: "Questo indirizzo email è già associato a un altro account."
         new:
           complete_profile: Completa il profile
           nickname_help: Il tuo alias in %{organization}. Può contenere solo lettere, numeri, '-' e '_'.

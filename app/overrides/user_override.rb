@@ -19,6 +19,15 @@ module Decidim
       super
     end
 
+    # Email ricevuta da PUA che non è stato possibile assegnare perché già usata da un altro account
+    def pua_email_conflict
+      tenant = organization.enabled_omniauth_providers.dig(:pua, :tenant_name)
+      pua_email = Decidim::Authorization.find_by(user: self, name: "#{tenant}_identity")&.metadata.to_h["email"].to_s.downcase
+      return if pua_email.blank? || pua_email == email.downcase
+
+      pua_email if organization.users.where("lower(email) = ?", pua_email).where.not(id: id).exists?
+    end
+
     def unauthenticated_message
       must_log_with_pua? ? :invalid_due_pua : :invalid
     end
