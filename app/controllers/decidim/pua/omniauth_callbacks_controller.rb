@@ -29,6 +29,7 @@ module Decidim
 
           # Aggiorna le informazioni dell'utente
           authenticator.update_user!(current_user, true)
+          flash[:warning] = t("failure.email_conflict", scope: "decidim.pua.omniauth_callbacks") if authenticator.email_conflict
 
           # to force remain logged in
           u = current_user
@@ -77,7 +78,7 @@ module Decidim
           @form.email ||= invited_user.email
           verified_e = invited_user.email
         else
-          if current_provider && isnt_cie_or_cns?(current_provider) && (u = current_organization.users.find_by(email: verified_e))
+          if verified_e.present? && (u = current_organization.users.find_by(email: verified_e))
             form_params[:name] = u.name
             form_params[:nickname] = u.nickname
           else
@@ -110,8 +111,7 @@ module Decidim
           )
         end
 
-        CreateOmniauthPuaRegistration.call(@form, (isnt_cie_or_cns?(current_provider) || invited_user.present?) && verified_e) do
-        # CreateOmniauthPuaRegistration.call(@form, verified_e) do
+        CreateOmniauthPuaRegistration.call(@form, verified_e) do
           on(:ok) do |user|
             # Se l'identità PUA è già utilizzata da un altro account
             if invited_user.present? && invited_user.email != user.email
@@ -150,14 +150,19 @@ module Decidim
           end
 
           on(:invalid) do |user|
-            set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: t("decidim.pua.omniauth_callbacks.failure.success_status")
+            if action_name == "create"
+              set_form_errors(@form.errors)
+              flash.now[:alert] = t("error", scope: "decidim.devise.registrations.create")
+            else
+              @form.errors.clear
+            end
             render :new
           end
 
           on(:error) do |user|
             r = user.errors.details.dig(:email).any?{ |a| a.dig(:error) == :taken } rescue nil
-            message = r ? t("failure.already_exists", scope: "decidim.pua.omniauth_callbacks") : user.errors.full_messages.try(:first)
-            set_flash_message :alert, :failure, kind: "SPID, CIE o CNS", reason: message
+            set_form_errors(user.errors)
+            flash.now[:alert] = r ? t("failure.already_exists", scope: "decidim.pua.omniauth_callbacks") : t("error", scope: "decidim.devise.registrations.create")
             render :new
           end
         end
@@ -170,6 +175,7 @@ module Decidim
           return fail_authorize unless authorize_user(resource_or_scope)
 
           authenticator.update_user!(resource_or_scope)
+          flash[:warning] = t("failure.email_conflict", scope: "decidim.pua.omniauth_callbacks") if authenticator.email_conflict
         end
 
         super
@@ -188,6 +194,18 @@ module Decidim
       def fail_authorize(failure_message_key = :already_authorized)
         flash[:alert] = t("failure.#{failure_message_key}", scope: "decidim.pua.omniauth_callbacks")
         redirect_to stored_location_for(resource || :user) || decidim.root_path
+      end
+
+      # Riporta sui campi della form gli errori (anche quelli di salvataggio dell'utente, es. nickname già in uso)
+      def set_form_errors(errors)
+        list = errors.map do |error|
+          attribute = [:name, :nickname, :email].include?(error.attribute) ? error.attribute : :base
+          message = t("errors.#{attribute}.#{error.type}", scope: "decidim.pua.omniauth_callbacks", count: error.options[:count],
+                      default: [:"decidim.pua.omniauth_callbacks.errors.#{error.type}", error.message.to_s.upcase_first])
+          [attribute, message]
+        end
+        @form.errors.clear
+        list.uniq.each { |attribute, message| @form.errors.add(attribute, message) }
       end
 
       def omniauth_registrations_path(resource)

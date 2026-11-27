@@ -20,6 +20,8 @@ module Decidim
           @new_user = false
         end
 
+        attr_reader :email_conflict
+
         def verified_email
           @verified_email ||= oauth_data[:info][:email].try(:downcase)
         end
@@ -119,25 +121,22 @@ module Decidim
 
           if (verified_email.present? && (user.email != verified_email)) || force
             user_changed = true
-            if is_spid?
-              user.skip_reconfirmation!
-            else
-              user.confirmed_at = nil if user.email != verified_email
-              # user.resend_confirmation_instructions unless user.confirmed?
-            end
+            # L'email proveniente da PUA è sempre verificata, indipendentemente dal provider
+            user.skip_reconfirmation!
             user.email = verified_email
           end
           # user.newsletter_notifications_at = Time.zone.now if user_newsletter_subscription?(user)
           notification_email = user.email_changed?
           if user.valid?
             if user_changed
-              if user.save! && is_spid? && notification_email
+              if user.save! && notification_email
                 Decidim::Pua::UpdateEmailPuaJob.perform_later(user)
               end
             end
           else
             if (user.errors.details.all?{ |k,v| k == :email && v.flatten.map{ |k| k[:error] }.all?(:taken) } rescue false)
               Rails.logger.info("decidim-module-pua || L'utente #{user.id} ha un'altro account decidim con la stessa email dello PUA richiesto. Non aggiorno l'email.")
+              @email_conflict = true
               user.reload
             end
           end

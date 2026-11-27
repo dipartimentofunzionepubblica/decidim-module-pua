@@ -19,10 +19,7 @@ module OmniAuth
 		  # Aggiungiamo l'id_token solo se effettivamente presente
 		  token = session_id_token
 		  params[:id_token_hint] = token if token.present?
-		  
-		  # Log per debug: verifica cosa stiamo inviando al DFP
-		  Rails.logger.debug "==============> LOGOUT PARAMS: #{params.inspect}"
-		  
+
 		  URI.encode_www_form(params)
 	 end
 

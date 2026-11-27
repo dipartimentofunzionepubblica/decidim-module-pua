@@ -22,6 +22,21 @@ Deface::Override.new(virtual_path: "decidim/account/show",
 end
 
 Deface::Override.new(virtual_path: "decidim/account/show",
+                     name: "pua-email-conflict-warning",
+                     insert_before: "erb[loud]:contains('decidim_form_for(@account')") do
+  "
+  <% if (pua_email = current_user.pua_email_conflict) %>
+    <div id='pua-email-conflict' class='flash warning'>
+      <div class='flash__message block leading-relaxed' style='flex: 1 1 auto; min-width: 0; white-space: normal; overflow-wrap: anywhere;'>
+        <p><strong><%= t('decidim.pua.account.email_conflict.title') %></strong></p>
+        <p><%= t('decidim.pua.account.email_conflict.body', pua_email: pua_email, email: current_user.email) %></p>
+      </div>
+    </div>
+  <% end %>
+  "
+end
+
+Deface::Override.new(virtual_path: "decidim/account/show",
                      name: "disable-email-when-is-a-pua-account",
                      replace: "erb:contains('f.email_field :email')") do
   "

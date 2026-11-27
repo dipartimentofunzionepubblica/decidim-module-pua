@@ -43,6 +43,10 @@ en:
       pua:
         name: PUA
     pua:
+      account:
+        email_conflict:
+          title: Email address not updated
+          body: "The email address of your PUA profile (%{pua_email}) is already associated with another account on the platform, so this account keeps using the address %{email}. To merge the accounts, please contact support."
       admin:
         actions:
           export: Export private users
@@ -59,9 +63,23 @@ en:
           session_expiration: "Session expired"
           already_exists: "Email is already present. Log in with your credentials and access SPID, CIE or CNS from your account settings."
           conditions: ""
+          email_conflict: "The email address of your PUA profile is already associated with another account on the platform, so the email of your profile has not been updated. To merge the accounts, please contact support."
         create:
           email_already_exists: Another account is using the same email address
           email_different: The email address entered is different from that of the invitation
+        errors:
+          blank: "This field is required."
+          invalid: "The value entered is not valid."
+          too_long: "The value entered exceeds the maximum length of %{count} characters."
+          name:
+            blank: "The username is required."
+          nickname:
+            blank: "The nickname is required."
+            invalid: "The nickname may only contain letters, numbers, hyphens (-) and underscores (_), without spaces."
+            taken: "This nickname is already used by another user. Please choose a different one."
+            too_long: "The nickname may contain at most %{count} characters."
+          email:
+            taken: "This email address is already associated with another account."
         new:
           complete_profile: Complete profile
           nickname_help: Your alias in %{organization}. Can only contain letters, numbers, '-' and '_'.

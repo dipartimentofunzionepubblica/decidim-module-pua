@@ -12,6 +12,6 @@ Deface::Override.new(virtual_path: "decidim/devise/omniauth_registrations/new",
   '
 <%= f.email_field :email, readonly: session["decidim-pua.tenant"].present? && f.object.email.present? %>
 <%= f.hidden_field :raw_data %>
-<%= f.hidden_field :invitation_token %>
+<%= f.hidden_field :invitation_token if f.object.respond_to?(:invitation_token) %>
 '
 end
